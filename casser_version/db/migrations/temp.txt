@@ -1,4 +1,9 @@
-CREATE TABLE IF NO EXISTS "users" (
+DROP TABLE IF EXISTS users;
+
+
+
+
+CREATE TABLE "users" (
     "id" bigserial PRIMARY KEY,
     "username" varchar NOT NULL,
     "email" varchar NOT NULL,
