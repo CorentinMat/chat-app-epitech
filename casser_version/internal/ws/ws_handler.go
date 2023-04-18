@@ -50,9 +50,9 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 	CheckOrigin: func(req *http.Request) bool {
 
-		// origin := req.Header.Get("Origin")
-		// return origin == "http://localhost:3000"
-		return true
+		origin := req.Header.Get("Origin")
+		return origin == "http://localhost:3000"
+		// return true
 	},
 }
 
