@@ -31,6 +31,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 }
 
 func (h *Handler) Login(c *gin.Context) {
+
 	var user LoginUserReq
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

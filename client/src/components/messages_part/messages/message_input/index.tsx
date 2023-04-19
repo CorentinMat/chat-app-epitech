@@ -11,7 +11,7 @@ function MessageInput() {
     <div className="bg-slate-200 w-full  h-10 flex  rounded-md">
       <input
         onChange={handleMessage}
-        className=" w-3/4 h-full bg-transparent"
+        className=" w-3/4 h-full bg-transparent focus:outline-none"
         type="text"
         placeholder="Type Something ..."
       />

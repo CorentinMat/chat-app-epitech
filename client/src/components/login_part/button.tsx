@@ -1,38 +1,44 @@
 import React from "react";
 import { API_URL } from "../../../constants";
 import { useRouter } from "next/router";
-export type Login = {
-  email: string;
-  password: string;
-};
-export type SignUp = {
-  username: string;
-  email: string;
-  password: string;
-};
+import { UserInfo } from "../../../modules/auth_provider";
 
 function Button(props: any) {
   const router = useRouter();
   const handleSubmit = async (e: any) => {
-    console.log("test = ", props.data);
-
     try {
-      const res = await fetch(`${API_URL}/login`, {
+      const res = await fetch(`${API_URL}/` + props.name, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(props.data),
       });
-      const data = res.json();
+      const data = await res.json();
+      console.log(data);
       if (res.ok) {
+        const user: UserInfo = {
+          username: data.username,
+          id: data.id,
+        };
+        localStorage.setItem("user_info", JSON.stringify(user));
         return router.push("/");
+      } else {
+        console.log("server error");
       }
     } catch (err) {
-      console.log(err);
+      console.log("password or email not found");
+      alert("password or email incorrect");
+      console.log("catch= ", err);
     }
   };
   return (
-    <div>
-      <button className="bg-slate-400" onClick={handleSubmit}>
+    <div className=" flex items-center justify-center p-4 ">
+      <button
+        className="bg-blue-400 p-3 px-7 rounded-md   "
+        onClick={handleSubmit}
+      >
         {props.name}
       </button>
     </div>
