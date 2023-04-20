@@ -29,6 +29,35 @@ func (h *Handler) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 
 }
+func (h *Handler) SaveMsg(c *gin.Context) {
+	var msg SaveMsgReq
+	if err := c.ShouldBindJSON(&msg); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.Service.SaveMsg(c.Request.Context(), &msg)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+
+}
+func (h *Handler) GetMsgByConversation(c *gin.Context) {
+	// ❌ mettre à jour rooms ID en fonction de la request ❌
+	roomID := int64(0)
+	var AllMessages []Message
+	if err := c.ShouldBindJSON(&AllMessages); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.Service.GetMsgByConversation(c.Request.Context(), roomID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
 
 func (h *Handler) Login(c *gin.Context) {
 
