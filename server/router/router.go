@@ -34,7 +34,7 @@ func InitRouter(userHandler *user.Handler, wsHandler *ws.Handler) {
 	r.POST("/login", userHandler.Login)
 	r.GET("/logout", userHandler.Logout)
 	r.POST("/saveMsg", userHandler.SaveMsg)
-
+	r.GET("/getContact", userHandler.GetContact)
 	r.GET("/getMsg", userHandler.GetMsgByConversation)
 
 	r.POST("/ws/createRoom", wsHandler.CreateRoom)

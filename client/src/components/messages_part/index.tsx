@@ -1,21 +1,25 @@
 import React from "react";
 import MessageSend from "./messages/messages_send";
 import MessageInput from "./messages/message_input";
+import MessageReceive from "./messages/message_receive";
+import MessageContentReceive from "./messages/message_content_receive";
 
-function MessagePart() {
+const MessagePart = ({ user }: any) => {
   return (
-    <div className="h-full relative">
+    <div className="h-full ">
+      hello, {user.username}, id = {user.id}
       {/* Message container */}
-      <div>
-        <MessageSend></MessageSend>
+      <div className="h-[56rem] ">
+        <MessageSend myname={user.username}></MessageSend>
+        <MessageReceive></MessageReceive>
+        <MessageContentReceive></MessageContentReceive>
       </div>
-
-      <div className=" absolute inset-x-0 bottom-6 flex  flex-col items-center ">
+      <div className="">
         {/* Message input */}
         <MessageInput></MessageInput>
       </div>
     </div>
   );
-}
+};
 
 export default MessagePart;

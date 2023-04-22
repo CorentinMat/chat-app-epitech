@@ -1,6 +1,8 @@
 package user
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -57,6 +59,28 @@ func (h *Handler) GetMsgByConversation(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+func (h *Handler) GetContact(c *gin.Context) {
+	// ❌ mettre à jour user ID en fonction de la request ❌
+	TempUserId := 15
+	// var contact []Contact
+	// if err := c.ShouldBindJSON(&contact); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"erreeeeeor": err.Error()})
+	// 	return
+	// }
+	res, err := h.Service.GetContact(c.Request.Context(), TempUserId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	data, err := json.Marshal(res)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"message": string(data), // cast it to string before showing
+	})
 }
 
 func (h *Handler) Login(c *gin.Context) {
