@@ -60,13 +60,14 @@ func (h *Handler) GetMsgByConversation(c *gin.Context) {
 }
 func (h *Handler) GetContact(c *gin.Context) {
 	// ❌ mettre à jour user ID en fonction de la request ❌
-	TempUserId := 15
+	// TempUserId := 15
+	var contactReq ContactReq
 	// var contact []Contact
-	// if err := c.ShouldBindJSON(&contact); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"erreeeeeor": err.Error()})
-	// 	return
-	// }
-	res, err := h.Service.GetContact(c.Request.Context(), TempUserId)
+	if err := c.ShouldBindJSON(&contactReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"erreeeeeor": err.Error()})
+		return
+	}
+	res, err := h.Service.GetContact(c.Request.Context(), contactReq)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

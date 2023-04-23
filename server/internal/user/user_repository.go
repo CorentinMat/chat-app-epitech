@@ -55,10 +55,10 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*User, e
 	return &u, nil
 }
 
-func (r *repository) GetContact(ctx context.Context, user_id int) (*[]Contact, error) {
+func (r *repository) GetContact(ctx context.Context, user_id ContactReq) (*[]Contact, error) {
 	var contact []Contact
 	query := "SELECT contact_id, username, profile_photo FROM contact WHERE user_id = $1"
-	rows, err := r.db.QueryContext(ctx, query, user_id)
+	rows, err := r.db.QueryContext(ctx, query, user_id.Id)
 	// .Scan(&contact.id, &contact.username, &contact.photo)
 	if err != nil {
 		return &[]Contact{}, err
@@ -71,7 +71,7 @@ func (r *repository) GetContact(ctx context.Context, user_id int) (*[]Contact, e
 		var contact_username string
 		var contact_photo string
 		if err := rows.Scan(&contact_id, &contact_username, &contact_photo); err != nil {
-			return nil, errors.Errorf("failed to scan result set for get Contact for user id = %q: %s", user_id, err)
+			return nil, errors.Errorf("failed to scan result set for get Contact for user id = %q: %s", user_id.Id, err)
 		}
 		// fmt.Println("teeeee :=", contact_id, contact_username, contact_photo)
 		new_contact := new(Contact)
