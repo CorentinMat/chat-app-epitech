@@ -27,7 +27,7 @@ type Repository interface {
 	// test
 	GetMsgByConversation(ctx context.Context, conversation_id int64) (*[]Message, error)
 	//test v2
-	GetContact(ctx context.Context, user_id int) ([]Contact, error)
+	GetContact(ctx context.Context, user_id int) (*[]Contact, error)
 }
 type Service interface {
 	CreateUser(c context.Context, req *CreateUserReq) (*CreateUserRes, error)
@@ -35,7 +35,7 @@ type Service interface {
 	SaveMsg(c context.Context, req *SaveMsgReq) (*Message, error)
 	//test
 	GetMsgByConversation(ctx context.Context, conversation_id int64) (*[]Message, error)
-	GetContact(ctx context.Context, user_id int) ([]Contact, error)
+	GetContact(ctx context.Context, user_id int) (*[]Contact, error)
 }
 
 type LoginUserReq struct {
@@ -43,7 +43,7 @@ type LoginUserReq struct {
 	Password string `json:"password" db:"password"`
 }
 type LoginUserRes struct {
-	accessToken string
+	AccessToken string
 	ID          string `json:"id" db:"id"`
 	Username    string `json:"username" db:"username"`
 }
@@ -65,9 +65,9 @@ type Message struct {
 }
 
 type Contact struct {
-	id       int    `json:"contact_id" db:"contact_id"`
-	username string `json:"contact_username" db:username"`
-	photo    string `json:"contact_photo" db:"profile_photo"`
+	Id       int    `json:"id" db:"contact_id"`
+	Username string `json:"username" db:username"`
+	Photo    string `json:"photo" db:"profile_photo"`
 }
 type AllContact struct {
 	Contact []Contact `json:"contact" db:"contact"`

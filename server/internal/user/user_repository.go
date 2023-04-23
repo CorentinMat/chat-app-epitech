@@ -55,18 +55,14 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*User, e
 	return &u, nil
 }
 
-// test return que 1 contact
-func (r *repository) GetContact(ctx context.Context, user_id int) ([]Contact, error) {
-	// bloquer à 10 contacts max pour le moment
-	// contact := make([]Contact, 10)
+func (r *repository) GetContact(ctx context.Context, user_id int) (*[]Contact, error) {
 	var contact []Contact
 	query := "SELECT contact_id, username, profile_photo FROM contact WHERE user_id = $1"
 	rows, err := r.db.QueryContext(ctx, query, user_id)
 	// .Scan(&contact.id, &contact.username, &contact.photo)
 	if err != nil {
-		return []Contact{}, err
+		return &[]Contact{}, err
 	}
-	count := 0
 	for rows.Next() {
 		if err := rows.Err(); err != nil {
 			return nil, err
@@ -79,15 +75,14 @@ func (r *repository) GetContact(ctx context.Context, user_id int) ([]Contact, er
 		}
 		// fmt.Println("teeeee :=", contact_id, contact_username, contact_photo)
 		new_contact := new(Contact)
-		new_contact.id = contact_id
-		new_contact.photo = contact_photo
-		new_contact.username = contact_username
+		new_contact.Id = contact_id
+		new_contact.Photo = contact_photo
+		new_contact.Username = contact_username
 		contact = append(contact, *new_contact)
-		count++
 
 	}
 	// fmt.Println(len(contact))
-	return contact, nil
+	return &contact, nil
 }
 func (r *repository) GetMsgByConversation(ctx context.Context, conversation_id int64) (*[]Message, error) {
 	var AllMessages []Message
