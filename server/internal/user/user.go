@@ -20,22 +20,25 @@ type CreateUserRes struct {
 	Email    string `json:"email" db:"email"`
 }
 type Repository interface {
-	SaveMsg(ctx context.Context, msg *Message) (*Message, error)
+	SaveMsg(ctx context.Context, msg *SaveMsgReq) (*Message, error)
 	CreateUser(ctx context.Context, user *User) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 
 	// test
-	GetMsgByConversation(ctx context.Context, conversation_id int64) (*[]Message, error)
+	GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error)
 	//test v2
 	GetContact(ctx context.Context, user_id ContactReq) (*[]Contact, error)
+	AddContact(ctx context.Context, req AddContactReq) (*Contact, error)
 }
 type Service interface {
 	CreateUser(c context.Context, req *CreateUserReq) (*CreateUserRes, error)
 	Login(c context.Context, req *LoginUserReq) (*LoginUserRes, error)
 	SaveMsg(c context.Context, req *SaveMsgReq) (*Message, error)
 	//test
-	GetMsgByConversation(ctx context.Context, conversation_id int64) (*[]Message, error)
+	GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error)
+
 	GetContact(ctx context.Context, user_id ContactReq) (*[]Contact, error)
+	AddContact(ctx context.Context, req AddContactReq) (*Contact, error)
 }
 
 type LoginUserReq struct {
@@ -48,25 +51,32 @@ type LoginUserRes struct {
 	Username    string `json:"username" db:"username"`
 }
 
-// test
 type SaveMsgReq struct {
-	FromUser     string `json:"from_user" db:"from_user"`
-	MessageText  string `json:"message_text" db:"message_text"`
-	SentDateTime string `json:"sent_datetime" db:"sent_datetime"`
-}
-
-// Je crois que Db :.... ne servent à rien 👋
-type Message struct {
-	MessageId      int64  `json:"message_id" db:"message_id"`
 	FromUser       string `json:"from_user" db:"from_user"`
 	MessageText    string `json:"message_text" db:"message_text"`
 	SentDateTime   string `json:"sent_datetime" db:"sent_datetime"`
-	ConversationId int64  `json:"conversation_id" db:"conversation_id"`
+	ConversationId int    `json:"conversation_id" db:"conversation_id"`
+}
+type GetMessageReq struct {
+	ConvId int `json:"conversation_id" db:"conversation_id"`
+}
+
+type Message struct {
+	MessageId      int    `json:"message_id" db:"message_id"`
+	FromUser       string `json:"from_user" db:"from_user"`
+	MessageText    string `json:"message_text" db:"message_text"`
+	SentDateTime   string `json:"sent_datetime" db:"sent_datetime"`
+	ConversationId int    `json:"conversation_id" db:"conversation_id"`
+}
+
+type AddContactReq struct {
+	Id   int `json:"contact_id" db:"contact_id"`
+	MyId int `json:"id" db:"id"`
 }
 
 type Contact struct {
 	Id       int    `json:"id" db:"contact_id"`
-	Username string `json:"username" db:username"`
+	Username string `json:"username" db:"username"`
 	Photo    string `json:"photo" db:"profile_photo"`
 }
 type ContactReq struct {

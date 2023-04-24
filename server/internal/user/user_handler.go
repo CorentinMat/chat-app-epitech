@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,6 +36,7 @@ func (h *Handler) SaveMsg(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Println(msg.ConversationId)
 	res, err := h.Service.SaveMsg(c.Request.Context(), &msg)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -45,24 +47,23 @@ func (h *Handler) SaveMsg(c *gin.Context) {
 }
 func (h *Handler) GetMsgByConversation(c *gin.Context) {
 	// ❌ mettre à jour rooms ID en fonction de la request ❌
-	roomID := int64(0)
-	var AllMessages []Message
-	if err := c.ShouldBindJSON(&AllMessages); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var conv GetMessageReq
+	if err := c.ShouldBindJSON(&conv); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"errrrrror": err.Error()})
 		return
 	}
-	res, err := h.Service.GetMsgByConversation(c.Request.Context(), roomID)
+	fmt.Println(conv.ConvId)
+	res, err := h.Service.GetMsgByConversation(c.Request.Context(), &conv)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	// fmt.Println("RESULT :", res)
 	c.JSON(http.StatusOK, res)
 }
 func (h *Handler) GetContact(c *gin.Context) {
-	// ❌ mettre à jour user ID en fonction de la request ❌
-	// TempUserId := 15
+
 	var contactReq ContactReq
-	// var contact []Contact
 	if err := c.ShouldBindJSON(&contactReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"erreeeeeor": err.Error()})
 		return
@@ -71,10 +72,20 @@ func (h *Handler) GetContact(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-
 	c.JSON(http.StatusOK, res)
 }
-
+func (h *Handler) AddContact(c *gin.Context) {
+	var contact AddContactReq
+	if err := c.ShouldBindJSON(&contact); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.Service.AddContact(c.Request.Context(), contact)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	c.JSON(http.StatusOK, res)
+}
 func (h *Handler) Login(c *gin.Context) {
 
 	var user LoginUserReq

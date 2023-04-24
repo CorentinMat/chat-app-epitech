@@ -34,10 +34,11 @@ func NewService(repository Repository) Service {
 func (s *service) SaveMsg(c context.Context, req *SaveMsgReq) (*Message, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
-	msg := &Message{
-		FromUser:     req.FromUser,
-		MessageText:  req.MessageText,
-		SentDateTime: req.SentDateTime,
+	msg := &SaveMsgReq{
+		FromUser:       req.FromUser,
+		MessageText:    req.MessageText,
+		SentDateTime:   req.SentDateTime,
+		ConversationId: req.ConversationId,
 	}
 	r, err := s.Repository.SaveMsg(ctx, msg)
 	if err != nil {

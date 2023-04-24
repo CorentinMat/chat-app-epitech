@@ -33,13 +33,18 @@ func InitRouter(userHandler *user.Handler, wsHandler *ws.Handler) {
 	r.POST("/signup", userHandler.CreateUser)
 	r.POST("/login", userHandler.Login)
 	r.GET("/logout", userHandler.Logout)
-	r.POST("/saveMsg", userHandler.SaveMsg)
-	r.POST("/getContact", userHandler.GetContact)
 
-	r.GET("/getMsg", userHandler.GetMsgByConversation)
+	r.POST("/getMsg", userHandler.GetMsgByConversation)
+	r.POST("/saveMsg", userHandler.SaveMsg)
+
+	r.POST("/getContact", userHandler.GetContact)
+	r.POST("addContact", userHandler.AddContact)
+	// rajouter delete contact si le temps
 
 	r.POST("/ws/createRoom", wsHandler.CreateRoom)
 	r.GET("ws/joinRoom/:roomId", wsHandler.JoinRoom)
+
+	// commencer websocket pour demain
 
 }
 

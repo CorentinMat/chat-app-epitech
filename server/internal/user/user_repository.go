@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/pkg/errors"
 )
@@ -21,16 +22,24 @@ type repository struct {
 func NewRepository(db *sql.DB) Repository {
 	return &repository{db: db}
 }
-func (r *repository) SaveMsg(ctx context.Context, msg *Message) (*Message, error) {
+func (r *repository) SaveMsg(ctx context.Context, req *SaveMsgReq) (*Message, error) {
 	var lastInsertId int
 	// Surement changer le returning ..
-	query := "INSERT INTO message(from_user,message_text,sent_datetime) VALUES($1,$2,$3) returning message_id"
-	err := r.db.QueryRowContext(ctx, query, msg.FromUser, msg.MessageText, msg.SentDateTime).Scan(&lastInsertId)
+	var message Message
+	fmt.Println("conv id :", req.ConversationId)
+
+	query := "INSERT INTO message(from_user,message_text,sent_datetime, conversation_id) VALUES($1,$2,$3,$4) returning message_id"
+	err := r.db.QueryRowContext(ctx, query, req.FromUser, req.MessageText, req.SentDateTime, req.ConversationId).Scan(&lastInsertId)
 	if err != nil {
 		return &Message{}, err
 	}
-	msg.MessageId = int64(lastInsertId)
-	return msg, nil
+	message.MessageId = lastInsertId
+	message.ConversationId = req.ConversationId
+	message.FromUser = req.FromUser
+	message.SentDateTime = req.SentDateTime
+	message.MessageText = req.MessageText
+
+	return &message, nil
 }
 
 func (r *repository) CreateUser(ctx context.Context, user *User) (*User, error) {
@@ -84,27 +93,60 @@ func (r *repository) GetContact(ctx context.Context, user_id ContactReq) (*[]Con
 	// fmt.Println(len(contact))
 	return &contact, nil
 }
-func (r *repository) GetMsgByConversation(ctx context.Context, conversation_id int64) (*[]Message, error) {
-	var AllMessages []Message
-	query := "SELECT from_user, message_text, sent_date FROM message WHERE conversation_id = $1"
-	rows, err := r.db.QueryContext(ctx, query, conversation_id)
+func (r *repository) AddContact(ctx context.Context, req AddContactReq) (*Contact, error) {
+	var contact Contact
+	query := "SELECT username, id FROM users WHERE id = $1"
+	err := r.db.QueryRowContext(ctx, query, req.Id).Scan(&contact.Username, &contact.Id)
 	if err != nil {
-		res := make([]Message, 0)
-		return &res, err
+		return &Contact{}, err
+	}
+	var test any
+	query = "INSERT INTO contact(username, contact_id, user_id) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT contact_id FROM contact WHERE contact_id = $2)"
+	err = r.db.QueryRowContext(ctx, query, contact.Username, contact.Id, req.MyId).Scan(&test)
+	if err != nil {
+		return &contact, nil
+	}
+	fmt.Println("test de test", test)
+	return &contact, nil
+}
+func (r *repository) GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error) {
+	fmt.Println(conv.ConvId)
+
+	var AllMessages []Message
+	query := "SELECT message_id, from_user, message_text, sent_datetime FROM message WHERE conversation_id = $1"
+	rows, err := r.db.QueryContext(ctx, query, conv.ConvId)
+	if err != nil {
+		return &[]Message{}, err
 	}
 	for rows.Next() {
 		if err := rows.Err(); err != nil {
 			return nil, err
 		}
+		var message_id int
+		var from_user string
+		var messageText string
+		var sent_datetime string
 
-		// log.Println("rows =>", rows.Next())
-		// var pkey int
-		// err = rows.Scan(&pkey, (&AllMessages))
-		// if err != nil {
-		// 	res := make([]Message, 0)
-		// 	return &res, err
-		// }
+		if err := rows.Scan(&message_id, &from_user, &messageText, &sent_datetime); err != nil {
+			return nil, errors.Errorf("failed to scan result set for get Conversation  for conv id = %q: %s", conv.ConvId, err)
+		}
+		fmt.Println("messageText : ", messageText)
+		new_message := new(Message)
+		new_message.ConversationId = conv.ConvId
+		new_message.FromUser = from_user
+		new_message.MessageId = message_id
+		new_message.MessageText = messageText
+		new_message.SentDateTime = sent_datetime
+		AllMessages = append(AllMessages, *new_message)
+		fmt.Println("new message", new_message.MessageText)
 	}
+	// new_message := new(Message)
+	// new_message.ConversationId = 1
+	// new_message.FromUser = "fredo le poto"
+	// new_message.MessageId = 15
+	// new_message.MessageText = "Hello le world"
+	// new_message.SentDateTime = "111111"
+	// AllMessages = append(AllMessages, *new_message)
 
 	return &AllMessages, nil
 
