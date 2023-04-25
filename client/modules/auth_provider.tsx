@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from "react";
 import { useRouter } from "next/router";
 export type UserInfo = {
   username: string;
-  id: string;
+  id: number;
 };
 export const AuthContext = createContext<{
   authenticated: boolean;
@@ -12,13 +12,13 @@ export const AuthContext = createContext<{
 }>({
   authenticated: false,
   setAuthenticated: () => {},
-  user: { username: "", id: "" },
+  user: { username: "", id: 0 },
   setUser: () => {},
 });
 
 const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState<UserInfo>({ username: "", id: "" });
+  const [user, setUser] = useState<UserInfo>({ username: "", id: 0 });
   const router = useRouter();
   useEffect(() => {
     const userInfo = localStorage.getItem("user_info");

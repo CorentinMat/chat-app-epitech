@@ -38,7 +38,7 @@ func InitRouter(userHandler *user.Handler, wsHandler *ws.Handler) {
 	r.POST("/saveMsg", userHandler.SaveMsg)
 
 	r.POST("/getContact", userHandler.GetContact)
-	r.POST("addContact", userHandler.AddContact)
+	r.POST("/addContact", userHandler.AddContact)
 	// rajouter delete contact si le temps
 
 	r.POST("/ws/createRoom", wsHandler.CreateRoom)

@@ -101,8 +101,8 @@ func (r *repository) AddContact(ctx context.Context, req AddContactReq) (*Contac
 		return &Contact{}, err
 	}
 	var test any
-	query = "INSERT INTO contact(username, contact_id, user_id) SELECT $1, $2, $3 WHERE NOT EXISTS (SELECT contact_id FROM contact WHERE contact_id = $2)"
-	err = r.db.QueryRowContext(ctx, query, contact.Username, contact.Id, req.MyId).Scan(&test)
+	query = "INSERT INTO contact(username, contact_id, user_id, profile_photo) SELECT $1, $2, $3, $4 WHERE NOT EXISTS (SELECT contact_id FROM contact WHERE contact_id = $2)"
+	err = r.db.QueryRowContext(ctx, query, contact.Username, contact.Id, req.MyId, "no_photo").Scan(&test)
 	if err != nil {
 		return &contact, nil
 	}
