@@ -100,13 +100,14 @@ func (r *repository) AddContact(ctx context.Context, req AddContactReq) (*Contac
 	if err != nil {
 		return &Contact{}, err
 	}
-	var test any
-	query = "INSERT INTO contact(username, contact_id, user_id, profile_photo) SELECT $1, $2, $3, $4 WHERE NOT EXISTS (SELECT contact_id FROM contact WHERE contact_id = $2)"
-	err = r.db.QueryRowContext(ctx, query, contact.Username, contact.Id, req.MyId, "no_photo").Scan(&test)
+
+	query = "INSERT INTO contact(username, contact_id, user_id, profile_photo) SELECT $1, $2, $3, $4 WHERE NOT EXISTS (SELECT contact_id FROM contact WHERE contact_id = $2 AND user_id = $3)"
+	rows, err := r.db.QueryContext(ctx, query, contact.Username, contact.Id, req.MyId, "no_photo")
+	fmt.Println(rows)
 	if err != nil {
-		return &contact, nil
+		fmt.Println(err)
+		return &Contact{}, err
 	}
-	fmt.Println("test de test", test)
 	return &contact, nil
 }
 func (r *repository) GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error) {

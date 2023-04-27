@@ -84,6 +84,8 @@ func (h *Handler) AddContact(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+	fmt.Println("lalalaalal")
+
 	c.JSON(http.StatusOK, res)
 }
 func (h *Handler) Login(c *gin.Context) {

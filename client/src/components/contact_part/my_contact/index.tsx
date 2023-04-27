@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Contact from "..";
-import { useQueryClient } from "react-query";
+import { useRouter } from "next/router";
 
 type Contact = {
   id: number;
@@ -12,9 +12,18 @@ type ContactReq = {
   id: number;
 };
 function MyContact({ id }: any) {
-  // let contact: Contact[] = [];
+  const router = useRouter();
+  const handleMessage = (id: number, username: string) => {
+    router.push(
+      {
+        pathname: "/chat",
+        query: { username, id },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
   const [contact, setContact] = useState<Contact[]>([]);
-
   const req: ContactReq = {
     id: parseInt(id),
   };
@@ -31,20 +40,16 @@ function MyContact({ id }: any) {
           body: JSON.stringify(req),
         });
         const resJson = await res.json();
-        console.log("ici", resJson);
+
         setContact(resJson);
       } catch (e) {
         console.log("Error loading contact: " + e);
       }
     };
     getContact();
-  });
+  }, [id]);
 
-  //// ----------------------------------------------------------------
-  const queryClient = useQueryClient();
-  // const query = useQuery({ queryKey: ["contact"], queryFn: getContact });
-  /////   ----------------------------------------------------------------
-  if (contact.length <= 0) {
+  if (contact === null) {
     return <div> loading ....</div>;
   } else {
     return (
@@ -52,13 +57,44 @@ function MyContact({ id }: any) {
         Contact
         <ul>
           {contact.map((c) => {
-            return (
-              <div key={c.id}>
-                <li>{c.username}</li>
-                <li>{c.id}</li>
-                <li>{c.photo}</li>
-              </div>
-            );
+            if (c.photo == "no_photo") {
+              return (
+                <div
+                  key={c.id}
+                  className=" flex items-center justify-start space-x-3 font-sans p-3 "
+                >
+                  <img className="w-12" src="./favicon.ico" alt="" />
+                  <li>
+                    {c.username + " "} {"#" + c.id}
+                  </li>
+                  <img
+                    onClick={() => {
+                      handleMessage(c.id, c.username);
+                    }}
+                    className=" w-6 absolute right-20  cursor-pointer"
+                    src="./chat-icon.png"
+                    alt=""
+                  />
+                </div>
+              );
+            } else {
+              return (
+                <div key={c.id}>
+                  <img src={c.photo} alt="" />
+                  <li>
+                    {c.username + " "} {c.id}
+                  </li>
+                  <img
+                    onClick={() => {
+                      handleMessage(c.id, c.username);
+                    }}
+                    className=" w-6 absolute right-20 "
+                    src="./chat-icon.png"
+                    alt=""
+                  />
+                </div>
+              );
+            }
           })}
         </ul>
       </div>

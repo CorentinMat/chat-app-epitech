@@ -5,17 +5,13 @@ type ContactReq = {
 };
 const AddContact = ({ id }: any) => {
   const [contact_id, setContact_id] = useState(0);
-  useEffect(() => {
-    console.log(id);
-  });
+
   const handleSubmit = async () => {
     try {
       const addContact: ContactReq = {
         contact_id: contact_id,
         id: parseInt(id),
       };
-      console.log(addContact);
-
       const res = await fetch("http://localhost:8080/addContact", {
         method: "POST",
         headers: {
@@ -25,6 +21,8 @@ const AddContact = ({ id }: any) => {
         body: JSON.stringify(addContact),
       });
       if (res.ok) {
+        console.log(await res.json());
+
         alert("Successfully added contact");
       } else {
         alert("couldn't add contact");
@@ -39,10 +37,9 @@ const AddContact = ({ id }: any) => {
       <input
         onChange={(e) => {
           setContact_id(parseInt(e.target.value));
-          console.log(contact_id);
         }}
         type="text"
-        placeholder="The contact id...."
+        placeholder="The contact id #..."
       />
       <button
         onClick={handleSubmit}

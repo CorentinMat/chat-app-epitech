@@ -49,7 +49,7 @@ var upgrader = websocket.Upgrader{
 
 func (h *Handler) JoinRoom(c *gin.Context) {
 	log.Println("JoinRoom c.writter: ", c.Writer)
-	log.Println("l'autre  c.Req: ", c.Request)
+	log.Println("l'autre  c.Req: ", c.Request.Body)
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {

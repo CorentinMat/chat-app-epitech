@@ -30,9 +30,7 @@ export default function Home(props: any) {
     		gap-4"
     >
       <div className="bg-lime-400 h-screen  px-24">contact part</div>
-      <div className=" col-start-2 col-end-4 col-span-2 	">
-        <MessagePart user={user}></MessagePart>
-      </div>
+
       <div className=" row-span-1 bg-blue-100	px-6 ">
         members part / groups info
         <button className="bg-red-400 p-3" onClick={handleJoinRoom}>
