@@ -25,6 +25,7 @@ func (c *Client) writeMessage() {
 	defer func() {
 		c.Conn.Close()
 	}()
+	fmt.Println("called ")
 	for {
 		message, ok := <-c.Message
 		if !ok {

@@ -32,18 +32,19 @@ const AddContact = ({ id }: any) => {
     }
   };
   return (
-    <div>
-      <p> Ajouter contact</p>
+    <div className=" flex flex-col w-full items-center justify-center space-y-6	font-sans	">
+      <p className="text-2xl">Add contact</p>
       <input
+        className="placeholder-gray-600 focus:placeholder-gray-500 p-2 rounded-md px-5"
         onChange={(e) => {
           setContact_id(parseInt(e.target.value));
         }}
         type="text"
-        placeholder="The contact id #..."
+        placeholder=" Only the number 🥸"
       />
       <button
         onClick={handleSubmit}
-        className="bg-blue-400 p-3 px-5 rounded-md "
+        className="bg-blue-400  rounded-md  p-3 px-5"
       >
         Ajouter
       </button>

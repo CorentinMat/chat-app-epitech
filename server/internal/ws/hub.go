@@ -33,23 +33,23 @@ func (h *Hub) Run() {
 					r.Clients[client.ID] = client
 				}
 			}
-		case client := <-h.Unregister:
-			if _, ok := h.Rooms[client.RoomID]; ok {
-				// check if the client existe
-				if _, ok := h.Rooms[client.RoomID].Clients[client.ID]; ok {
-					// message for other clients
-					if len(h.Rooms[client.RoomID].Clients) > 0 {
-						h.Broadcast <- &Message{
-							Content:  "User left the room 🫡",
-							RoomID:   client.ID,
-							Username: client.Username,
-						}
-					}
+		// case client := <-h.Unregister:
+		// 	if _, ok := h.Rooms[client.RoomID]; ok {
+		// 		// check if the client existe
+		// 		if _, ok := h.Rooms[client.RoomID].Clients[client.ID]; ok {
+		// 			// message for other clients
+		// 			if len(h.Rooms[client.RoomID].Clients) > 0 {
+		// 				h.Broadcast <- &Message{
+		// 					Content:  "User left the room 🫡",
+		// 					RoomID:   client.ID,
+		// 					Username: client.Username,
+		// 				}
+		// 			}
 
-					delete(h.Rooms[client.ID].Clients, client.ID)
-					close(client.Message)
-				}
-			}
+		// 			delete(h.Rooms[client.ID].Clients, client.ID)
+		// 			close(client.Message)
+		// 		}
+		// 	}
 		case m := <-h.Broadcast:
 			if _, ok := h.Rooms[m.RoomID]; ok {
 				for _, client := range h.Rooms[m.RoomID].Clients {

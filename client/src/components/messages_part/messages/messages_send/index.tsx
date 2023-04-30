@@ -1,6 +1,20 @@
-import React from "react";
-
+import React, { useContext, useEffect } from "react";
+import { useRouter } from "next/router";
+import { WebsocketContext } from "../../../../../modules/websocket_provider";
+import { Message } from "../message_input";
 function MessageSend({ myname }: any) {
+  const { conn } = useContext(WebsocketContext);
+  const router = useRouter();
+  useEffect(() => {
+    if (conn === null) {
+      router.push("/");
+      return;
+    }
+    conn.onmessage = (message) => {
+      const m: Message = JSON.parse(message.data);
+      console.log("on message = ", m);
+    };
+  }, [conn]);
   return (
     <div className="flex font-sans ">
       <img

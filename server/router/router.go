@@ -44,7 +44,9 @@ func InitRouter(userHandler *user.Handler, wsHandler *ws.Handler) {
 	r.POST("/ws/createRoom", wsHandler.CreateRoom)
 	r.GET("ws/joinRoom/:roomId", wsHandler.JoinRoom)
 
-	// commencer websocket pour demain
+	r.GET("/ws/getRooms", wsHandler.GetRooms)
+	// pour test
+	r.GET("/ws/getClients/:roomId", wsHandler.GetClients)
 
 }
 

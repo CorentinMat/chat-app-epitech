@@ -18,6 +18,16 @@ function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center min-w-full min-h-screen">
+      <h2 className="text-5xl	 font-sans py-2">Login</h2>
+      <div>
+        <iframe
+          src="https://giphy.com/embed/xTiIzJSKB4l7xTouE8"
+          width="100%"
+          height="100%"
+          allowFullScreen
+        ></iframe>
+      </div>
+
       <input
         onChange={(e) => {
           setEmail(e.target.value);
@@ -34,7 +44,7 @@ function Login() {
         placeholder="Password"
         className="p-3 mt-8 rounded-md border-2 border-grey focus:outline-none focus:border-blue-600"
       />
-      <Button name="login" data={{ email, password }}></Button>
+      <Button name="Login" route="login" data={{ email, password }}></Button>
       <a className="bg-blue-400 p-3 px-5 rounded-md " href="/signup">
         Signup
       </a>
