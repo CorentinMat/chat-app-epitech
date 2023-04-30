@@ -5,7 +5,6 @@ import React, { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
 
 function Chat(props: any) {
-  console.log("hello");
   const handleContact = () => {
     router.push("/");
   };

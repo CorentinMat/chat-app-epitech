@@ -24,20 +24,20 @@ const formatId = (id1: string, id2: string) => {
   }
   return "error";
 };
+
+// trop mal opti ....
 const getRooms = async (roomId: string) => {
   const res = await fetch("http://localhost:8080/ws/getRooms");
   const resJon = await res.json();
   for (let i = 0; i < resJon.length; i++) {
     if (resJon[i].id === roomId) {
-      console.log(resJon[i].id + "===" + roomId);
       return false;
     }
   }
-  console.log("ROOM ==== ", resJon);
   return true;
 };
 type Room = {
-  socket?: WebSocket;
+  socket: WebSocket | null;
   id: number;
 };
 
@@ -53,6 +53,12 @@ function MyContact({ id }: any) {
       undefined,
       { shallow: true }
     );
+    const room = Rooms.get(id.toString());
+    if (room) {
+      if (room.socket) {
+        setConn(room.socket);
+      }
+    }
   };
   const [contact, setContact] = useState<Contact[]>([]);
   const req: ContactReq = {
@@ -82,9 +88,9 @@ function MyContact({ id }: any) {
   // --------------------------- websocket part  ------------------------------------
 
   const { setConn } = useContext(WebsocketContext);
-  const { conn } = useContext(WebsocketContext);
+  // const { conn } = useContext(WebsocketContext);
 
-  let Rooms: Room[] = [];
+  let Rooms = new Map<string, Room>([]);
   const { user } = useContext(AuthContext);
 
   const createRoom = async (contact_id: string) => {
@@ -96,9 +102,9 @@ function MyContact({ id }: any) {
         // 🚨 surement changer le nom  car mauvais technique .....🚨 le contact du contact n'est pas mon contact ^^
         name: formatId(contact_id, user.id.toString()),
       };
-
       // -----------------------pas scalable .... 🚨
       const checkRooms = await getRooms(req.id);
+
       if (checkRooms) {
         try {
           const res = await fetch("http://localhost:8080/ws/createRoom", {
@@ -109,27 +115,23 @@ function MyContact({ id }: any) {
             },
             body: JSON.stringify(req),
           });
-          // const resJson = await res.json();
-
-          // console.log("resultat fetch createRoom", resJson);
+          const resJson = await res.json();
         } catch (e) {
           console.log("Error loading contact: " + e);
         }
+        // console.log("ROOM CREATED");
+      } else {
+        // console.log(" A ROOMD ALREADY EXIST !!!!");
       }
       // -----------------------pas scalable .... 🚨
-
-      console.log("roomId: " + roomId);
-      console.log("ROOM CREATED");
-    } else {
-      console.log(" A ROOMD ALREADY EXIST !!!!");
     }
   };
   let roomId: number;
 
   const joinRoom = (contact_id: string) => {
     roomId = parseInt(formatId(contact_id, user.id.toString()));
-    // console.log(roomId);
-    createRoom(roomId.toString());
+
+    createRoom(contact_id);
     const url = `ws://127.0.0.1:8080/ws/joinRoom/${roomId}?userId=${user.id}&username=${user.username}`;
 
     const ws = new WebSocket(url);
@@ -145,10 +147,7 @@ function MyContact({ id }: any) {
       console.log(" websocket closed .. ");
     };
     ws.onopen = () => {
-      // setConn(ws);
-      // console.log(roomId);
-
-      Rooms.push(room);
+      Rooms.set(contact_id, room);
     };
     return () => {
       ws.close();
@@ -158,7 +157,12 @@ function MyContact({ id }: any) {
   // --------------------------- websocket part  ------------------------------------
 
   if (contact === null) {
-    return <div> No contact 🥱 </div>;
+    return (
+      <div className="flex items-center justify-center p-2 text-2xl font-sans">
+        {" "}
+        No contact 🥱{" "}
+      </div>
+    );
   } else {
     for (let i = 0; i < contact.length; i++) {
       const req = {
@@ -167,7 +171,7 @@ function MyContact({ id }: any) {
       };
       joinRoom(req.id.toString());
     }
-    console.log(Rooms);
+    // console.log(Rooms);
     return (
       <div className=" flex flex-col items-center font-sans">
         <h2 className="text-2xl items-center text-center">Contact</h2>
