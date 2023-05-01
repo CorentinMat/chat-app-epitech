@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { WebsocketContext } from "../../../../../modules/websocket_provider";
-import { Message } from "../message_input";
-
-export type Messages = {
-  text: string;
-  user: string;
-  // photo: string;
+export type Message = {
+  content: string;
+  room_id: string;
+  username: string;
+  type: "recv" | "self";
 };
+
 function MessageSend({ myname }: any) {
   const { conn } = useContext(WebsocketContext);
   const router = useRouter();
@@ -18,15 +18,30 @@ function MessageSend({ myname }: any) {
       router.push("/");
       return;
     }
-    conn.onmessage = (e) => {
-      const message: Messages = {
-        text: e.data,
-        user: e.data.username,
-      };
-      console.log("received message : ", message);
-      // setMessages(message);
+    console.log(conn.url);
+    const ws = new WebSocket(conn.url);
+
+    ws.onopen = () => {
+      console.log("its oppen bro ");
     };
-  }, [conn]);
+    ws.onmessage = (e) => {
+      console.log(e.data);
+    };
+    conn.onmessage = (e) => {
+      // const message: Message = {
+      //   content: e.data.content,
+      //   room_id: e.data.room_id,
+      //   username: e.data.username,
+      //   type: "recv",
+      // };
+      // Faire comme ça mieux pour réact !
+      // const newMessages = [...messages];
+      // newMessages.push(message);
+
+      console.log("received message : ", e.data);
+      // setMessages(newMessages);
+    };
+  }, []);
   return (
     <div className="flex font-sans ">
       <img

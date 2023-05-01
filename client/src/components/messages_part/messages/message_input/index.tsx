@@ -1,17 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { WebsocketContext } from "../../../../../modules/websocket_provider";
 import { useRouter } from "next/router";
-export type Message = {
-  content: string;
-  client_id: string;
-  username: string;
-  room_id: string;
-  type: "recv" | "self";
-};
+
 function MessageInput() {
   const { conn } = useContext(WebsocketContext);
   const router = useRouter();
-
   const [message, setMessage] = useState("");
 
   const handleClick = () => {
