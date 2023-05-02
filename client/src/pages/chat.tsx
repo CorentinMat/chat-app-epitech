@@ -3,7 +3,7 @@ import { AuthContext } from "../../modules/auth_provider";
 
 import React, { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-import { formatId } from "@/components/contact_part/my_contact";
+
 function Chat(props: any) {
   const handleContact = () => {
     router.push("/");
@@ -14,7 +14,7 @@ function Chat(props: any) {
 
   return (
     <div>
-      <button className="bg-red-400 p-3" onClick={handleContact}>
+      <button type="submit" className="bg-red-400 p-3" onClick={handleContact}>
         Go back to contact
       </button>
 

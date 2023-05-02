@@ -7,7 +7,7 @@ import { json } from "stream/consumers";
 
 export type Message = {
   content: string;
-  room_id: string;
+  conversation_id: number;
   username: string;
   id: number;
   sent_datetime: string;
@@ -44,10 +44,11 @@ function MessageSend({ myname }: any) {
       const req: SaveMsgReq = {
         from_user: message.username,
         message_text: message.content,
-        sent_datetime: "pas d'heure pour le moment",
+        sent_datetime: message.sent_datetime,
         // 🚨 A CHANGER PAR LA SUITE !!! 🚨
-        conversation_id: parseInt(message.room_id),
+        conversation_id: message.conversation_id,
       };
+
       const res = await fetch("http://localhost:8080/saveMsg", {
         method: "POST",
         headers: {
@@ -62,7 +63,6 @@ function MessageSend({ myname }: any) {
       const data = await res.json();
 
       message.id = data.message_id;
-      message.sent_datetime = data.sent_datetime;
     } catch (e) {
       console.log("catch error = " + e);
     }
@@ -85,7 +85,15 @@ function MessageSend({ myname }: any) {
         console.log("getMsg error = " + res);
       }
       const data = await res.json();
-      console.log("get all msg from conv 2 = ", data);
+      const newMessages = [...messages];
+
+      for (let i = 0; i < data.length; i++) {
+        const newMessages = [...messages];
+
+        newMessages.push(message);
+      }
+      console.log("messages = " + newMessages);
+      // setMessages(newMessages);
     } catch (e) {
       console.log("getting message error = " + e);
     }
@@ -105,14 +113,18 @@ function MessageSend({ myname }: any) {
       };
       socket.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        console.log("data => ", data);
+        const date = new Date();
+        const minute = date.getMinutes().toString();
+        const hour = date.getHours().toString();
+        const second = date.getSeconds().toString();
+        const all = hour + ":" + minute + ":" + second;
         message = {
           content: data.content,
-          //🚨 à changer quand conv id sera mis a jour / mettre le meme id pour la conv id que room id 🚨
-          room_id: data.room_id,
+          //🚨 à changer quand convd sera mis a jour / mettre le meme id pour la conv id que room id 🚨
+          conversation_id: parseInt(data.room_id),
           username: data.username,
           id: 1,
-          sent_datetime: "no datetime",
+          sent_datetime: all,
         };
         if (message.content != "New user has joined this room") {
           saveMsg(message);
@@ -122,9 +134,8 @@ function MessageSend({ myname }: any) {
           newMessages.push(message);
 
           setMessages(newMessages);
-          console.log(messages);
         } else {
-          getMsg(parseInt(message.room_id));
+          getMsg(message.conversation_id);
         }
         console.log("msg :", message);
       };
@@ -132,28 +143,44 @@ function MessageSend({ myname }: any) {
         socket.close();
       };
     }
-  }, []);
+  }, [messages]);
+  let lastmsg = "";
 
   return (
-    <div className="flex font-sans ">
-      <img
-        className="w-12 items-center	"
-        src="./favicon.ico"
-        alt="profile-picture"
-      />
-      <h4 className=" py-2 px-3 items-start font-semibold text-slate-800">
-        {user.username}
-      </h4>
-      <p className=" py-3 first-letter:items-start text-slate-400  text-xs	">
-        {" "}
-        surement enlever la date
-      </p>
-      <ul className="bg-red-200">
-        message ==
-        {messages.map((msg) => {
-          return <li key={msg.id}>{msg.content}</li>;
-        })}
-      </ul>
+    <div className="">
+      {messages.map((msg) => {
+        if (lastmsg != msg.username) {
+          lastmsg = msg.username;
+          return (
+            <div key={msg.id} className="flex font-sans  pr-6 ">
+              <img
+                className="w-12 items-center	"
+                src="./favicon.ico"
+                alt="profile-picture"
+              />
+              <h4 className=" py-2 px-3 items-start font-semibold text-slate-800">
+                {msg.username} :
+              </h4>
+              <p className="py-2 px-3 items-start break-words">{msg.content}</p>
+              <p className=" py-3 first-letter:items-start text-slate-400  text-xs	">
+                {msg.sent_datetime}
+              </p>
+            </div>
+          );
+        } else {
+          lastmsg = msg.username;
+          return (
+            <div key={msg.id} className="flex font-sans   pr-6 space-x-3">
+              <p className="py-2  pl-message  items-start break-words">
+                {msg.content}
+              </p>
+              <p className=" py-3 first-letter:items-start text-slate-400  text-xs	">
+                {msg.sent_datetime}
+              </p>
+            </div>
+          );
+        }
+      })}
     </div>
   );
 }

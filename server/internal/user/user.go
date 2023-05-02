@@ -67,9 +67,9 @@ type CreateConv struct {
 }
 
 type Message struct {
-	MessageId      int    `json:"message_id" db:"message_id"`
-	FromUser       string `json:"from_user" db:"from_user"`
-	MessageText    string `json:"message_text" db:"message_text"`
+	MessageId      int    `json:"id" db:"message_id"`
+	FromUser       string `json:"username" db:"from_user"`
+	MessageText    string `json:"content" db:"message_text"`
 	SentDateTime   string `json:"sent_datetime" db:"sent_datetime"`
 	ConversationId int    `json:"conversation_id" db:"conversation_id"`
 }

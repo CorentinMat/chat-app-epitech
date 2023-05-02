@@ -56,7 +56,6 @@ function MyContact({ id }: any) {
     const room = Rooms.get(id.toString());
     if (room) {
       if (room.socket) {
-        console.log(room);
         setConn(room.socket);
       }
     }
@@ -165,10 +164,10 @@ function MyContact({ id }: any) {
     ws.onopen = () => {
       Rooms.set(contact_id, room);
     };
-    ws.onmessage = (e) => {
-      const res = JSON.parse(e.data);
-      console.log(res.content);
-    };
+    // ws.onmessage = (e) => {
+    //   const res = JSON.parse(e.data);
+    //   console.log("test", res.content);
+    // };
     return () => {
       ws.close();
     };
