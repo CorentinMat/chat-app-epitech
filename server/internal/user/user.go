@@ -24,9 +24,9 @@ type Repository interface {
 	CreateUser(ctx context.Context, user *User) (*User, error)
 	GetUserByEmail(ctx context.Context, email string) (*User, error)
 
-	// test
+	CreateConversation(ctx context.Context, req *CreateConv) (*CreateConv, error)
 	GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error)
-	//test v2
+
 	GetContact(ctx context.Context, user_id ContactReq) (*[]Contact, error)
 	AddContact(ctx context.Context, req AddContactReq) (*Contact, error)
 }
@@ -34,8 +34,9 @@ type Service interface {
 	CreateUser(c context.Context, req *CreateUserReq) (*CreateUserRes, error)
 	Login(c context.Context, req *LoginUserReq) (*LoginUserRes, error)
 	SaveMsg(c context.Context, req *SaveMsgReq) (*Message, error)
-	//test
+
 	GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error)
+	CreateConversation(ctx context.Context, req *CreateConv) (*CreateConv, error)
 
 	GetContact(ctx context.Context, user_id ContactReq) (*[]Contact, error)
 	AddContact(ctx context.Context, req AddContactReq) (*Contact, error)
@@ -59,6 +60,10 @@ type SaveMsgReq struct {
 }
 type GetMessageReq struct {
 	ConvId int `json:"conversation_id" db:"conversation_id"`
+}
+type CreateConv struct {
+	Conv_name string `json:"conversation_name" db:"conversation_name"`
+	Conv_id   int    `json:"conversation_id" db:"conversation_id"`
 }
 
 type Message struct {

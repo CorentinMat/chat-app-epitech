@@ -13,7 +13,7 @@ type Contact = {
 type ContactReq = {
   id: number;
 };
-const formatId = (id1: string, id2: string) => {
+export const formatId = (id1: string, id2: string) => {
   if (typeof id1 === "string") {
     const int_id1 = parseInt(id1);
     const int_id2 = parseInt(id2);
@@ -36,7 +36,7 @@ const getRooms = async (roomId: string) => {
   }
   return true;
 };
-type Room = {
+export type Room = {
   socket: WebSocket | null;
   id: number;
 };
@@ -85,11 +85,11 @@ function MyContact({ id }: any) {
       }
     };
     getContact();
+    //🚨 changer id ???? pour fetch les contacts des le débuts ????🚨
   }, [id]);
   // --------------------------- websocket part  ------------------------------------
 
   const { setConn } = useContext(WebsocketContext);
-  // const { conn } = useContext(WebsocketContext);
 
   let Rooms = new Map<string, Room>([]);
   const { user } = useContext(AuthContext);
@@ -103,9 +103,25 @@ function MyContact({ id }: any) {
         // 🚨 surement changer le nom  car mauvais technique .....🚨 le contact du contact n'est pas mon contact ^^
         name: formatId(contact_id, user.id.toString()),
       };
-      // -----------------------pas scalable .... 🚨
       const checkRooms = await getRooms(req.id);
-
+      try {
+        // changer reqConv name quand il y aura des Rooms names
+        const reqConv = {
+          conversation_name: req.name,
+          conversation_id: parseInt(req.id),
+        };
+        const res = await fetch("http://localhost:8080/createConv", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reqConv),
+        });
+        // console.log(await res.json());
+      } catch (e) {
+        console.log("Error while Creating a new Converversation : ", e);
+      }
       if (checkRooms) {
         try {
           const res = await fetch("http://localhost:8080/ws/createRoom", {
@@ -118,13 +134,12 @@ function MyContact({ id }: any) {
           });
           const resJson = await res.json();
         } catch (e) {
-          console.log("Error loading contact: " + e);
+          console.log("Error creating Room: " + e);
         }
         // console.log("ROOM CREATED");
       } else {
         // console.log(" A ROOMD ALREADY EXIST !!!!");
       }
-      // -----------------------pas scalable .... 🚨
     }
   };
   let roomId: number;

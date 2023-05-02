@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -36,10 +35,25 @@ func (h *Handler) SaveMsg(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(msg.ConversationId)
+
 	res, err := h.Service.SaveMsg(c.Request.Context(), &msg)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+
+}
+func (h *Handler) CreateConversation(c *gin.Context) {
+	var conv CreateConv
+	if err := c.ShouldBindJSON(&conv); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	res, err := h.Service.CreateConversation(c.Request.Context(), &conv)
+	if err != nil {
+		// cart renvoie error si il existe déjà un conversation 🤦‍♂️
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, res)
@@ -52,13 +66,12 @@ func (h *Handler) GetMsgByConversation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"errrrrror": err.Error()})
 		return
 	}
-	fmt.Println(conv.ConvId)
 	res, err := h.Service.GetMsgByConversation(c.Request.Context(), &conv)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	// fmt.Println("RESULT :", res)
+
 	c.JSON(http.StatusOK, res)
 }
 func (h *Handler) GetContact(c *gin.Context) {
@@ -84,7 +97,6 @@ func (h *Handler) AddContact(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	fmt.Println("lalalaalal")
 
 	c.JSON(http.StatusOK, res)
 }

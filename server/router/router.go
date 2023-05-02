@@ -36,6 +36,7 @@ func InitRouter(userHandler *user.Handler, wsHandler *ws.Handler) {
 
 	r.POST("/getMsg", userHandler.GetMsgByConversation)
 	r.POST("/saveMsg", userHandler.SaveMsg)
+	r.POST("/createConv", userHandler.CreateConversation)
 
 	r.POST("/getContact", userHandler.GetContact)
 	r.POST("/addContact", userHandler.AddContact)
@@ -45,7 +46,7 @@ func InitRouter(userHandler *user.Handler, wsHandler *ws.Handler) {
 	r.GET("ws/joinRoom/:roomId", wsHandler.JoinRoom)
 
 	r.GET("/ws/getRooms", wsHandler.GetRooms)
-	// pour test
+
 	r.GET("/ws/getClients/:roomId", wsHandler.GetClients)
 
 }

@@ -3,7 +3,7 @@ import { AuthContext } from "../../modules/auth_provider";
 
 import React, { useContext, useEffect } from "react";
 import { useRouter } from "next/router";
-
+import { formatId } from "@/components/contact_part/my_contact";
 function Chat(props: any) {
   const handleContact = () => {
     router.push("/");

@@ -102,13 +102,23 @@ func (r *repository) AddContact(ctx context.Context, req AddContactReq) (*Contac
 	}
 
 	query = "INSERT INTO contact(username, contact_id, user_id, profile_photo) SELECT $1, $2, $3, $4 WHERE NOT EXISTS (SELECT contact_id FROM contact WHERE contact_id = $2 AND user_id = $3)"
-	rows, err := r.db.QueryContext(ctx, query, contact.Username, contact.Id, req.MyId, "no_photo")
-	fmt.Println(rows)
+	_, err = r.db.QueryContext(ctx, query, contact.Username, contact.Id, req.MyId, "no_photo")
+
 	if err != nil {
 		fmt.Println(err)
 		return &Contact{}, err
 	}
 	return &contact, nil
+}
+func (r *repository) CreateConversation(ctx context.Context, req *CreateConv) (*CreateConv, error) {
+	var conv CreateConv
+	query := "INSERT INTO conversation(conversation_name, conversation_id) SELECT $1, $2 WHERE NOT EXISTS (SELECT conversation_id FROM conversation WHERE conversation_id = $2 )"
+	err := r.db.QueryRowContext(ctx, query, req.Conv_name, req.Conv_id).Scan(&conv.Conv_name, &conv.Conv_id)
+	if err != nil {
+		return &CreateConv{}, err
+	}
+	return &conv, nil
+
 }
 func (r *repository) GetMsgByConversation(ctx context.Context, conv *GetMessageReq) (*[]Message, error) {
 	fmt.Println(conv.ConvId)
