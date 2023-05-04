@@ -26,7 +26,6 @@ func (r *repository) SaveMsg(ctx context.Context, req *SaveMsgReq) (*Message, er
 	var lastInsertId int
 	// Surement changer le returning ..
 	var message Message
-	fmt.Println("conv id :", req.ConversationId)
 
 	query := "INSERT INTO message(from_user,message_text,sent_datetime, conversation_id) VALUES($1,$2,$3,$4) returning message_id"
 	err := r.db.QueryRowContext(ctx, query, req.FromUser, req.MessageText, req.SentDateTime, req.ConversationId).Scan(&lastInsertId)
@@ -141,7 +140,7 @@ func (r *repository) GetMsgByConversation(ctx context.Context, conv *GetMessageR
 		if err := rows.Scan(&message_id, &from_user, &messageText, &sent_datetime); err != nil {
 			return nil, errors.Errorf("failed to scan result set for get Conversation  for conv id = %q: %s", conv.ConvId, err)
 		}
-		fmt.Println("messageText : ", messageText)
+
 		new_message := new(Message)
 		new_message.ConversationId = conv.ConvId
 		new_message.FromUser = from_user
@@ -149,7 +148,7 @@ func (r *repository) GetMsgByConversation(ctx context.Context, conv *GetMessageR
 		new_message.MessageText = messageText
 		new_message.SentDateTime = sent_datetime
 		AllMessages = append(AllMessages, *new_message)
-		fmt.Println("new message", new_message.MessageText)
+
 	}
 	// new_message := new(Message)
 	// new_message.ConversationId = 1

@@ -4,6 +4,7 @@ import { WebsocketContext } from "../../../../../modules/websocket_provider";
 import { AuthContext } from "../../../../../modules/auth_provider";
 import { formatId } from "@/components/contact_part/my_contact";
 import { json } from "stream/consumers";
+import { Socket } from "socket.io";
 
 export type Message = {
   content: string;
@@ -26,7 +27,6 @@ type GetMsgReq = {
 function MessageSend({ myname }: any) {
   const { user } = useContext(AuthContext);
 
-  // const { conn } = useContext(WebsocketContext);
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -34,11 +34,11 @@ function MessageSend({ myname }: any) {
     username: router.query.username,
     id: router.query.id,
   };
-  // let msg = {
-  //   id: 0,
-  //   sent_datetime: "no datetime",
-  // };
+  const roomdId = router.query.roomId;
   let message: Message;
+
+  let newMessages = [...messages];
+
   const saveMsg = async (message: Message) => {
     try {
       const req: SaveMsgReq = {
@@ -62,7 +62,7 @@ function MessageSend({ myname }: any) {
       }
       const data = await res.json();
 
-      message.id = data.message_id;
+      message.id = parseInt(await data.id);
     } catch (e) {
       console.log("catch error = " + e);
     }
@@ -85,20 +85,27 @@ function MessageSend({ myname }: any) {
         console.log("getMsg error = " + res);
       }
       const data = await res.json();
-      const newMessages = [...messages];
-
       for (let i = 0; i < data.length; i++) {
-        const newMessages = [...messages];
+        const msg: Message = await data[i];
 
-        newMessages.push(message);
+        newMessages.push(msg);
       }
-      console.log("messages = " + newMessages);
-      // setMessages(newMessages);
+      if (messages.length === 0) {
+        setMessages(newMessages);
+      }
+      console.log(newMessages);
     } catch (e) {
       console.log("getting message error = " + e);
     }
   };
+
   useEffect(() => {
+    // if (conn) {
+    //   conn.onmessage = (e) => {
+    //     console.log("got message = " + e);
+    //   };
+    // }
+    // getMsg(Number(roomdId));
     if (contact.id) {
       let roomId = parseInt(
         formatId(contact.id.toString(), user.id.toString())
@@ -109,10 +116,12 @@ function MessageSend({ myname }: any) {
         console.log("opened");
       };
       socket.onclose = () => {
-        console.log("closed");
+        console.log("websocket  closed");
       };
+
       socket.onmessage = (e) => {
         const data = JSON.parse(e.data);
+
         const date = new Date();
         const minute = date.getMinutes().toString();
         const hour = date.getHours().toString();
@@ -123,26 +132,31 @@ function MessageSend({ myname }: any) {
           //🚨 à changer quand convd sera mis a jour / mettre le meme id pour la conv id que room id 🚨
           conversation_id: parseInt(data.room_id),
           username: data.username,
+          //👀 id pas unique !
           id: 1,
           sent_datetime: all,
         };
         if (message.content != "New user has joined this room") {
-          saveMsg(message);
+          saveMsg(message).then(() => {
+            // console.log("all messages = ", newMessages);
+            if (messages.length > 0) {
+              newMessages = [...messages];
+            }
+            newMessages.push(message);
+            console.log(newMessages);
 
-          const newMessages = [...messages];
-
-          newMessages.push(message);
-
-          setMessages(newMessages);
+            setMessages(newMessages);
+          });
         } else {
-          getMsg(message.conversation_id);
+          newMessages = [];
+          getMsg(Number(roomId));
         }
-        console.log("msg :", message);
       };
       return () => {
         socket.close();
       };
     }
+    // du au fait que pas messages 🚨
   }, [messages]);
   let lastmsg = "";
 
@@ -152,7 +166,7 @@ function MessageSend({ myname }: any) {
         if (lastmsg != msg.username) {
           lastmsg = msg.username;
           return (
-            <div key={msg.id} className="flex font-sans  pr-6 ">
+            <div key={msg.id} className="flex font-sans  pr-6  p-1">
               <img
                 className="w-12 items-center	"
                 src="./favicon.ico"
@@ -161,8 +175,10 @@ function MessageSend({ myname }: any) {
               <h4 className=" py-2 px-3 items-start font-semibold text-slate-800">
                 {msg.username} :
               </h4>
-              <p className="py-2 px-3 items-start break-words">{msg.content}</p>
-              <p className=" py-3 first-letter:items-start text-slate-400  text-xs	">
+              <p className="py-2 px-3 items-start break-word bg-slate-200  p-5 font-sans leading-relaxed rounded-r-xl rounded-bl-xl	 ">
+                {msg.content}
+              </p>
+              <p className="px-2 py-3 first-letter:items-start text-slate-400  text-xs	">
                 {msg.sent_datetime}
               </p>
             </div>
@@ -170,11 +186,14 @@ function MessageSend({ myname }: any) {
         } else {
           lastmsg = msg.username;
           return (
-            <div key={msg.id} className="flex font-sans   pr-6 space-x-3">
-              <p className="py-2  pl-message  items-start break-words">
+            <div
+              key={msg.id}
+              className="flex font-sans   pr-6 space-x-3 relative left-message pb-1 "
+            >
+              <p className="py-2   items-start break-words bg-slate-200  p-5 font-sans leading-relaxed  rounded-r-xl rounded-bl-xl">
                 {msg.content}
               </p>
-              <p className=" py-3 first-letter:items-start text-slate-400  text-xs	">
+              <p className=" px-2 py-3 first-letter:items-start text-slate-400  text-xs	">
                 {msg.sent_datetime}
               </p>
             </div>

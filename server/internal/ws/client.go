@@ -31,7 +31,7 @@ func (c *Client) writeMessage() {
 		if !ok {
 			return
 		}
-		fmt.Println("WRITE MESSAGE: ", message)
+
 		c.Conn.WriteJSON(message)
 	}
 }
@@ -54,7 +54,7 @@ func (c *Client) readMessage(hub *Hub) {
 			RoomID:   c.RoomID,
 			Username: c.Username,
 		}
-		fmt.Println("read message : ", msg)
+
 		hub.Broadcast <- msg
 	}
 }

@@ -3,6 +3,7 @@ import AddContact from "./add_contact";
 import MyContact from "./my_contact";
 
 function Contact({ user }: any) {
+  console.log(user);
   return (
     <div className="flex flex-col space-y-8">
       <MyContact id={user.id}></MyContact>

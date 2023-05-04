@@ -5,7 +5,7 @@ import { UserInfo } from "../../../modules/auth_provider";
 
 function Button(props: any) {
   const router = useRouter();
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async () => {
     if (
       props.data.email === "" ||
       props.data.username === "" ||
@@ -30,7 +30,7 @@ function Button(props: any) {
             id: data.id,
           };
           localStorage.setItem("user_info", JSON.stringify(user));
-          return router.push("/");
+          return router.push("/", undefined, { shallow: false });
         } else {
           console.log("server error");
         }
@@ -43,12 +43,9 @@ function Button(props: any) {
   };
   return (
     <div className=" flex items-center justify-center p-4 ">
-      <button
-        className="bg-blue-400 p-3 px-7 rounded-md   "
-        onClick={handleSubmit}
-      >
+      <a className="bg-blue-400 p-3 px-7 rounded-md" onClick={handleSubmit}>
         {props.name}
-      </button>
+      </a>
     </div>
   );
 }

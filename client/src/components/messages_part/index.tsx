@@ -13,13 +13,19 @@ const MessagePart = ({ user }: any) => {
   };
 
   return (
-    <div className="h-full ">
-      hello, {user.username}, id = {user.id}
+    <div className="h-full flex flex-col  justify-center ">
       {/* Message container */}
-      <div className="h-[50rem] overflow-scroll	 ">
+      <div className="flex flex-col items-center  space-y-2 mb-3 ">
+        <img className="w-20" src="./favicon.ico" alt="" />
+        <h2 className=" text-center">
+          {contact.username} #{contact.id}
+        </h2>
+      </div>
+
+      <div className="h-[44rem] overflow-scroll mx-10 border-t-2 border-slate-300 p-3 ">
         <MessageSend user={user}></MessageSend>
       </div>
-      <div className=" flex items-center justify-center">
+      <div className=" flex items-center justify-center  py-4 ">
         {/* Message input */}
         <MessageInput></MessageInput>
       </div>

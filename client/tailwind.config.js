@@ -13,7 +13,7 @@ module.exports = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       spacing: {
-        message: "9rem",
+        message: "8.5rem",
       },
       fontFamily: { sans: ["Helvetica", "Arial", "sans-serif"] },
     },

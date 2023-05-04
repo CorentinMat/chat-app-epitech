@@ -12,6 +12,7 @@ const AddContact = ({ id }: any) => {
         contact_id: contact_id,
         id: parseInt(id),
       };
+      console.log(addContact);
       const res = await fetch("http://localhost:8080/addContact", {
         method: "POST",
         headers: {

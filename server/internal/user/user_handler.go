@@ -60,7 +60,6 @@ func (h *Handler) CreateConversation(c *gin.Context) {
 
 }
 func (h *Handler) GetMsgByConversation(c *gin.Context) {
-	// ❌ mettre à jour rooms ID en fonction de la request ❌
 	var conv GetMessageReq
 	if err := c.ShouldBindJSON(&conv); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"errrrrror": err.Error()})

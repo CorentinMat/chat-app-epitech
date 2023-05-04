@@ -2,21 +2,20 @@ import MessagePart from "@/components/messages_part";
 import { AuthContext } from "../../modules/auth_provider";
 
 import React, { useContext, useEffect } from "react";
-import { useRouter } from "next/router";
 
 function Chat(props: any) {
-  const handleContact = () => {
-    router.push("/");
-  };
+  // const handleContact = () => {
+  //   router.push("/");
+  // };
   const { user } = useContext(AuthContext);
 
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
-    <div>
-      <button type="submit" className="bg-red-400 p-3" onClick={handleContact}>
+    <div className="py-6 px-3">
+      <a href={"/"} className="bg-blue-400 p-4 rounded-md">
         Go back to contact
-      </button>
+      </a>
 
       <div className=" col-start-2 col-end-4 col-span-2 	">
         <MessagePart user={user}></MessagePart>

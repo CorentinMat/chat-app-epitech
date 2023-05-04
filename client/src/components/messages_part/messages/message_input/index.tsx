@@ -21,10 +21,10 @@ function MessageInput() {
     setMessage(e.target.value);
   };
   return (
-    <div className="bg-slate-200 w-10/12	  h-14 flex  rounded-md items-center ">
+    <div className="bg-slate-200 w-6/12	  h-14 flex  rounded-md items-center  ">
       <input
         onChange={handleMessage}
-        className="ps-6 w-full  bg-transparent focus:outline-none"
+        className="ps-6 w-full  bg-transparent focus:outline-none "
         type="text"
         value={message}
         placeholder="Type Something ..."

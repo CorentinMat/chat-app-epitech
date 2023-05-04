@@ -15,9 +15,13 @@ export default function Home(props: any) {
     <main className=" h-screen">
       <div className=" row-span-1 bg-blue-100	px-6 h-full ">
         <Contact user={user}></Contact>
-        <button className="bg-red-300 p-3 rounded-md" onClick={handleDisconect}>
+        <a
+          className="bg-red-300 p-3 rounded-md"
+          onClick={handleDisconect}
+          href="/"
+        >
           Logout👋
-        </button>
+        </a>
       </div>
     </main>
   );

@@ -44,11 +44,12 @@ export type Room = {
 // -------------------------------- START COMPONENT --------------------------------
 function MyContact({ id }: any) {
   const router = useRouter();
-  const handleChatRoom = (id: number, username: string) => {
+  const handleChatRoom = (id: number, username: string, roomId: number) => {
+    console.log(roomId);
     router.push(
       {
         pathname: "/chat",
-        query: { username, id },
+        query: { username, id, roomId },
       },
       undefined,
       { shallow: true }
@@ -61,12 +62,13 @@ function MyContact({ id }: any) {
     }
   };
   const [contact, setContact] = useState<Contact[]>([]);
-  const req: ContactReq = {
-    id: parseInt(id),
-  };
 
   useEffect(() => {
-    const getContact = async () => {
+    const req: ContactReq = {
+      id: parseInt(id),
+    };
+    const getContact = async (req: any) => {
+      console.log("req :", req);
       try {
         const res = await fetch("http://localhost:8080/getContact", {
           method: "POST",
@@ -77,13 +79,14 @@ function MyContact({ id }: any) {
           body: JSON.stringify(req),
         });
         const resJson = await res.json();
-
-        setContact(resJson);
+        console.log(await resJson);
+        setContact(await resJson);
       } catch (e) {
         console.log("Error loading contact: " + e);
       }
     };
-    getContact();
+    getContact(req);
+
     //🚨 changer id ???? pour fetch les contacts des le débuts ????🚨
   }, [id]);
   // --------------------------- websocket part  ------------------------------------
@@ -200,7 +203,7 @@ function MyContact({ id }: any) {
               return (
                 <div
                   onClick={() => {
-                    handleChatRoom(c.id, c.username);
+                    handleChatRoom(c.id, c.username, roomId);
                   }}
                   key={c.id}
                   className="  flex items-center space-x-3 font-sans p-3 cursor-pointer "
@@ -216,7 +219,7 @@ function MyContact({ id }: any) {
               return (
                 <div
                   onClick={() => {
-                    handleChatRoom(c.id, c.username);
+                    handleChatRoom(c.id, c.username, roomId);
                   }}
                   key={c.id}
                   className="cursor-pointer"
