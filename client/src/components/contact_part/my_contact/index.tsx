@@ -25,7 +25,7 @@ export const formatId = (id1: string, id2: string) => {
   return "error";
 };
 
-// trop mal opti ....
+// trop mal opti car get toutes les rooms du serveur ... 🤦‍♂️
 const getRooms = async (roomId: string) => {
   const res = await fetch("http://localhost:8080/ws/getRooms");
   const resJon = await res.json();
@@ -45,14 +45,13 @@ export type Room = {
 function MyContact({ id }: any) {
   const router = useRouter();
   const handleChatRoom = (id: number, username: string, roomId: number) => {
-    console.log(roomId);
     router.push(
       {
         pathname: "/chat",
         query: { username, id, roomId },
       },
       undefined,
-      { shallow: true }
+      { shallow: false }
     );
     const room = Rooms.get(id.toString());
     if (room) {
@@ -68,7 +67,6 @@ function MyContact({ id }: any) {
       id: parseInt(id),
     };
     const getContact = async (req: any) => {
-      console.log("req :", req);
       try {
         const res = await fetch("http://localhost:8080/getContact", {
           method: "POST",
@@ -79,7 +77,7 @@ function MyContact({ id }: any) {
           body: JSON.stringify(req),
         });
         const resJson = await res.json();
-        console.log(await resJson);
+
         setContact(await resJson);
       } catch (e) {
         console.log("Error loading contact: " + e);
@@ -193,7 +191,7 @@ function MyContact({ id }: any) {
       };
       joinRoom(req.id.toString());
     }
-    // console.log(Rooms);
+
     return (
       <div className=" flex flex-col items-center font-sans">
         <h2 className="text-2xl items-center text-center">Contact</h2>

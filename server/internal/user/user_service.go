@@ -3,7 +3,6 @@ package user
 import (
 	"chat-app/util"
 	"context"
-	"log"
 	"strconv"
 	"time"
 
@@ -30,7 +29,6 @@ func NewService(repository Repository) Service {
 	return &service{repository, time.Duration(2) * time.Second}
 }
 
-// ----------------------------- test 	--------------------------------------------------------------------------------------------
 func (s *service) SaveMsg(c context.Context, req *SaveMsgReq) (*Message, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
@@ -51,7 +49,7 @@ func (s *service) SaveMsg(c context.Context, req *SaveMsgReq) (*Message, error) 
 		SentDateTime:   r.SentDateTime,
 		ConversationId: r.ConversationId,
 	}
-	log.Println(r)
+
 	return res, nil
 }
 

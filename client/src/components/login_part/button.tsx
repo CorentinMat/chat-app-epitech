@@ -35,7 +35,6 @@ function Button(props: any) {
           console.log("server error");
         }
       } catch (err) {
-        console.log("password or email not found");
         alert("password or email incorrect");
         console.log("catch= ", err);
       }

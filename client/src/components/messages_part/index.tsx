@@ -23,7 +23,7 @@ const MessagePart = ({ user }: any) => {
       </div>
 
       <div className="h-[44rem] overflow-scroll mx-10 border-t-2 border-slate-300 p-3 ">
-        <MessageSend user={user}></MessageSend>
+        <MessageSend></MessageSend>
       </div>
       <div className=" flex items-center justify-center  py-4 ">
         {/* Message input */}

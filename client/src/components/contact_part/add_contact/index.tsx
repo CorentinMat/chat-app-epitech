@@ -35,6 +35,7 @@ const AddContact = ({ id }: any) => {
   return (
     <div className=" flex flex-col w-full items-center justify-center space-y-6	font-sans	">
       <p className="text-2xl">Add contact</p>
+      <p>My id : {id}</p>
       <input
         className="placeholder-gray-600 focus:placeholder-gray-500 p-2 rounded-md px-5"
         onChange={(e) => {

@@ -123,7 +123,7 @@ func (r *repository) GetMsgByConversation(ctx context.Context, conv *GetMessageR
 	fmt.Println(conv.ConvId)
 
 	var AllMessages []Message
-	query := "SELECT message_id, from_user, message_text, sent_datetime FROM message WHERE conversation_id = $1"
+	query := "SELECT message_id, from_user, message_text, sent_datetime FROM message WHERE conversation_id = $1  ORDER BY message_id"
 	rows, err := r.db.QueryContext(ctx, query, conv.ConvId)
 	if err != nil {
 		return &[]Message{}, err

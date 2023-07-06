@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { WebsocketContext } from "../../../../../modules/websocket_provider";
+
 import { AuthContext } from "../../../../../modules/auth_provider";
 import { formatId } from "@/components/contact_part/my_contact";
-import { json } from "stream/consumers";
-import { Socket } from "socket.io";
 
 export type Message = {
   content: string;
@@ -24,7 +22,7 @@ type GetMsgReq = {
   conversation_id: number;
 };
 
-function MessageSend({ myname }: any) {
+function MessageSend() {
   const { user } = useContext(AuthContext);
 
   const router = useRouter();
@@ -39,34 +37,34 @@ function MessageSend({ myname }: any) {
 
   let newMessages = [...messages];
 
-  const saveMsg = async (message: Message) => {
-    try {
-      const req: SaveMsgReq = {
-        from_user: message.username,
-        message_text: message.content,
-        sent_datetime: message.sent_datetime,
-        // 🚨 A CHANGER PAR LA SUITE !!! 🚨
-        conversation_id: message.conversation_id,
-      };
+  // const saveMsg = async (message: Message) => {
+  //   try {
+  //     const req: SaveMsgReq = {
+  //       from_user: message.username,
+  //       message_text: message.content,
+  //       sent_datetime: message.sent_datetime,
 
-      const res = await fetch("http://localhost:8080/saveMsg", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(req),
-      });
-      if (!res.ok) {
-        console.log("could'nt save the msg ");
-      }
-      const data = await res.json();
+  //       conversation_id: message.conversation_id,
+  //     };
+  //     console.log(req);
+  //     const res = await fetch("http://localhost:8080/saveMsg", {
+  //       method: "POST",
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(req),
+  //     });
+  //     if (!res.ok) {
+  //       console.log("could'nt save the msg ");
+  //     }
+  //     const data = await res.json();
 
-      message.id = parseInt(await data.id);
-    } catch (e) {
-      console.log("catch error = " + e);
-    }
-  };
+  //     message.id = Number(await data.id);
+  //   } catch (e) {
+  //     console.log("catch error = " + e);
+  //   }
+  // };
 
   const getMsg = async (conv_id: number) => {
     try {
@@ -86,14 +84,12 @@ function MessageSend({ myname }: any) {
       }
       const data = await res.json();
       for (let i = 0; i < data.length; i++) {
-        const msg: Message = await data[i];
-
+        const msg: Message = data[i];
         newMessages.push(msg);
       }
       if (messages.length === 0) {
         setMessages(newMessages);
       }
-      console.log(newMessages);
     } catch (e) {
       console.log("getting message error = " + e);
     }
@@ -105,7 +101,7 @@ function MessageSend({ myname }: any) {
     //     console.log("got message = " + e);
     //   };
     // }
-    // getMsg(Number(roomdId));
+
     if (contact.id) {
       let roomId = parseInt(
         formatId(contact.id.toString(), user.id.toString())
@@ -127,36 +123,36 @@ function MessageSend({ myname }: any) {
         const hour = date.getHours().toString();
         const second = date.getSeconds().toString();
         const all = hour + ":" + minute + ":" + second;
+
         message = {
           content: data.content,
-          //🚨 à changer quand convd sera mis a jour / mettre le meme id pour la conv id que room id 🚨
-          conversation_id: parseInt(data.room_id),
+
+          conversation_id: roomId,
           username: data.username,
-          //👀 id pas unique !
-          id: 1,
+
+          id: data.id,
           sent_datetime: all,
         };
+        console.log("la", message.id);
         if (message.content != "New user has joined this room") {
-          saveMsg(message).then(() => {
-            // console.log("all messages = ", newMessages);
-            if (messages.length > 0) {
-              newMessages = [...messages];
-            }
-            newMessages.push(message);
-            console.log(newMessages);
+          // saveMsg(message).then(() => {
+          if (messages.length > 0) {
+            newMessages = [...messages];
+          }
+          newMessages.push(message);
 
-            setMessages(newMessages);
-          });
+          setMessages(newMessages);
+          // });
         } else {
           newMessages = [];
-          getMsg(Number(roomId));
+
+          getMsg(roomId);
         }
       };
       return () => {
         socket.close();
       };
     }
-    // du au fait que pas messages 🚨
   }, [messages]);
   let lastmsg = "";
 
